@@ -1,0 +1,105 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+trigger:
+- master
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  servicePrincipal: http://bbenzsp20190901
+  servicePrincipalTenant: 72f988bf-86f1-41af-91ab-2d7cd011db47
+  azureSubscriptionName: ca-bbenz-demo-test
+  resourceGroupName: bbenztailwind-frontend
+  location: westus2
+  webAppSku: S1
+  storageAccountSku: Standard_LRS
+
+stages:
+- stage: build
+  jobs:
+  - job: BuildJob
+    pool:
+      vmImage: 'windows-latest'
+
+    steps:
+
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
+        
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: VSTest@2
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: 'Deploy'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+- stage: ProvisionAndDeployDev
+  jobs:
+  - deployment: ProvisionAndDeployDev
+    displayName: Provision And Deploy Dev
+    pool:
+      name: Hosted Windows 2019 with VS2019
+    variables:
+      appPlanName: ASP-bbenztailwindfrontend-8dd1
+      stagingAppName: bbenztailwindstaging
+      productionAppName: bbenztailwindproduction
+      storageAccountName: bbenztailwindstagingstorage
+    environment: 'bbenztailwinddevops'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+            patterns: '**/*'
+
+          - task: AzureKeyVault@1
+            inputs:
+              azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
+              KeyVaultName: 'bbenzkeyvault'
+              SecretsFilter: '*'
+
+          - task: PowerShell@2
+            inputs:
+              filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
+              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(ignitefy20serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -appPlanName $(appPlanName) -stagingAppName $(stagingAppName) -productionAppName $(productionAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
+              appType: 'webApp'
+              WebAppName: '$(stagingAppName)'
+              packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
+              appType: 'webApp'
+              WebAppName: '$(productionAppName)'
+              packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
+
