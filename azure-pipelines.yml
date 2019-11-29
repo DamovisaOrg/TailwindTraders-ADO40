@@ -1,6 +1,4 @@
 # ASP.NET
-- task: UseNode@1
-  inputs:
 # Build and test ASP.NET projects.
 # Add steps that publish symbols, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
@@ -21,6 +19,9 @@ stages:
       vmImage: 'windows-latest'
 
     steps:
+
+- task: UseNode@1
+
 
     - task: NuGetToolInstaller@1
 
