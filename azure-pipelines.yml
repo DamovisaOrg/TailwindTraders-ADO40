@@ -20,14 +20,15 @@ stages:
 
     steps:
 
-- task: UseNode@1
-
-
     - task: NuGetToolInstaller@1
 
     - task: NuGetCommand@2
       inputs:
         restoreSolution: '$(solution)'
+        
+    - task: UseNode@1
+      inputs:
+        versionSpec: '10.x'
         
     - task: VSBuild@1
       inputs:
