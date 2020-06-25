@@ -30,10 +30,10 @@ jobs:
       run: dotnet build ./Source/*.sln --configuration Release --no-restore
     - name: Test
       run: dotnet test ./Source/*.sln --no-restore --verbosity normal
-    - name: TEMP set CI off
-      run: process.env.CI = true
     - name: Publish
-      run: dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o ./staging
+      run: |
+        CI=false
+        dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o ./staging
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
