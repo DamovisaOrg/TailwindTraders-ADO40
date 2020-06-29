@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 env:
-  AZURE_WEBAPP_NAME: TailwindTraders-Website-ADO40
+  AZURE_WEBAPP_NAME: TailwindTraders-ADO40
 
 jobs:
   build:
