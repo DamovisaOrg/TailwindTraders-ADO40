@@ -58,8 +58,8 @@ jobs:
       uses: aliencube/microsoft-teams-actions@v0.8.0
       with:
         webhook_uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
-        title: 'PR Deployment Completed - ${{ GITHUB_RUN_ID }}'
-        summary: '.NET Core PR deployment has succeeded Run ID: ${{ GITHUB_RUN_ID }}'
+        title: 'PR Deployment Completed - ${{ env.GITHUB_RUN_ID }}'
+        summary: '.NET Core PR deployment has succeeded Run ID: ${{ env.GITHUB_RUN_ID }}'
         text: ''
         theme_color: '222222'
         sections: '[{ "activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", "activityTitle": "PR Build completed: [${{ github.event.pull_request.url }}](PR URL)",  "activityText": "Commit message: [${{ github.event.head_commit.message}}](${{ github.event.head_commit.url }})" }]'
