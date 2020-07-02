@@ -39,17 +39,17 @@ jobs:
       run: dotnet test ./Source/*.sln --no-restore --verbosity normal
     
     - name: Publish
-      run:  dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o ./staging
+      run:  dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o ~/drop
     
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
         name: drop
-        path: ./staging
+        path: ~/drop
     
     - name: Deploy to Website
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.PUBLISH_PROFILE_PROD }}
-        package: ./staging
+        package: ~/drop/**.*
