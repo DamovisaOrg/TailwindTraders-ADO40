@@ -2,7 +2,7 @@
 
 ![Tailwind Traders Website](Documents/Images/Website.png)
 
-[![Build status](https://dev.azure.com/TailwindTraders/Website/_apis/build/status/Website-CI)](https://dev.azure.com/TailwindTraders/Website/_build?definitionId=22)
+![.NET Core - Build Status](https://github.com/Damovisa/TailwindTraders-ADO40/workflows/.NET%20Core/badge.svg)
 
 You can take a look at our live running website following this address: [https://tailwindtraders.com](https://tailwindtraders.com)
 
