@@ -45,11 +45,11 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: drop
-        path: './staging'
+        path: './Source/Tailwind.Traders.Web/staging'
     
     - name: Deploy to Website
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.PUBLISH_PROFILE_PROD }}
-        package: './staging'
+        package: './Source/Tailwind.Traders.Web/staging'
