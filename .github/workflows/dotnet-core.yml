@@ -39,7 +39,7 @@ jobs:
       run: dotnet test ./Source/*.sln --no-restore --verbosity normal
     
     - name: Publish
-      run:  dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o './staging'
+      run: dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o './staging'
     
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
@@ -53,14 +53,17 @@ jobs:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.PUBLISH_PROFILE_PROD }}
         package: './Source/Tailwind.Traders.Web/staging'
+    
+    - name: Get current time
+      run: echo "::set-env name=DEPLOYTIME::$(date)"
 
     - name: Send a message to Microsoft Teams
       uses: aliencube/microsoft-teams-actions@v0.8.0
       with:
         webhook_uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
-        title: 'PR Deployment Completed - ${{ env.GITHUB_RUN_ID }}'
-        summary: '.NET Core PR deployment has succeeded Run ID: ${{ env.GITHUB_RUN_ID }}'
-        text: '*ALL THE VARIABLES!* [${{ github.event.compare }}]'
+        title: "PR Deployment Completed - $GITHUB_RUN_ID"
+        summary: ''
+        text: "$DEPLOYTIME"
         theme_color: '222222'
-        sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "PR Build completed: [${{ github.event.pull_request.url }}](${{ github.event.pull_request.url }})","activityText": "Commit message: [${{ github.event.head_commit.message}}](${{ github.event.head_commit.url }})"}]'
+        sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "Build completed: [${{ github.event.pull_request.url }}](${{ github.event.pull_request.url }})","activityText": "Commit message: [${{ github.event.head_commit.message}}](${{ github.event.head_commit.url }})"}]'
         actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "${{ github.event.head_commit.url }}"}]},{"@type": "OpenUri","name": "Promote to Production","targets": [{"os": "default","uri": "${{ github.event.head_commit.url }}"}]}]'
