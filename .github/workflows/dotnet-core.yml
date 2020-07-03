@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       CI: ""
+      baseRunUrl: "https://github.com/Damovisa/TailwindTraders-ADO40/actions/runs/"
 
     steps:
     - uses: actions/checkout@v2
@@ -45,7 +46,7 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.PUBLISH_PROFILE_PROD }}
+        publish-profile: ${{ secrets.PUBLISH_PROFILE_STAGING }}
         package: './Source/Tailwind.Traders.Web/staging'
     
     - name: Get current time
@@ -59,5 +60,5 @@ jobs:
         summary: ''
         text: ${{ env.DEPLOYTIME }}
         theme_color: '222222'
-        sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "Build completed: [${{ env.GITHUB_RUN_ID }}](${{ github.event.check_run.html_url }})","activityText": "[${{ github.event.head_commit.message}}](${{ github.event.compare }})"}]'
-        actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "${{ github.event.head_commit.url }}"}]},{"@type": "OpenUri","name": "Promote to Production","targets": [{"os": "default","uri": "${{ github.event.head_commit.url }}"}]}]'
+        sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "Build completed [Run ${{ github.run_id }}](${{ env.baseRunUrl }}${{ github.run_id }})","activityText": "[${{ github.event.head_commit.message}}](${{ github.event.compare }})"}]'
+        actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "https://tailwindtraders-ado40-staging.azurewebsites.net/"}]},{"@type": "OpenUri","name": "Promote to Production","targets": [{"os": "default","uri": "${{ github.event.head_commit.url }}"}]}]'
