@@ -61,9 +61,9 @@ jobs:
       uses: aliencube/microsoft-teams-actions@v0.8.0
       with:
         webhook_uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
-        title: "PR Deployment Completed - $GITHUB_RUN_ID"
+        title: "Deployment Completed"
         summary: ''
-        text: "$DEPLOYTIME"
+        text: ${{ env.DEPLOYTIME }}
         theme_color: '222222'
-        sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "Build completed: [${{ github.event.pull_request.url }}](${{ github.event.pull_request.url }})","activityText": "Commit message: [${{ github.event.head_commit.message}}](${{ github.event.head_commit.url }})"}]'
+        sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "Build completed: [${{ env.GITHUB_RUN_ID }}](${{ github.event.check_run.html_url }})","activityText": "[${{ github.event.head_commit.message}}](${{ github.event.compare }})"}]'
         actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "${{ github.event.head_commit.url }}"}]},{"@type": "OpenUri","name": "Promote to Production","targets": [{"os": "default","uri": "${{ github.event.head_commit.url }}"}]}]'
