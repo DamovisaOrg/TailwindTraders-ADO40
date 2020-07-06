@@ -1,0 +1,13 @@
+{
+    "slots": {
+        "sourceslot": "staging",
+        "targetslot": "production"
+    },
+    "teamsui": {
+        "initialDeploymentTime": "${{ env.DEPLOYTIME }}",
+        "activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+        "activityTitle": "Build completed [Run ${{ github.run_id }}](${{ env.baseRunUrl }}${{ github.run_id }})",
+        "activityText": "[${{ github.event.head_commit.message}}](${{ github.event.compare }})",
+        "urlToLinkTo": "https://tailwindtraders-ado40.azurewebsites.net/"
+    }
+}
