@@ -19,36 +19,36 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
-#    - name: Setup .NET Core
-#      uses: actions/setup-dotnet@v1
-#      with:
-#        dotnet-version: 2.1.x
-    
-#    - name: Setup Node
-#      uses: actions/setup-node@v1
-#      with:
-#        node-version: 10.x
-    
-#    - name: Install dependencies
-#      run: dotnet restore ./Source/*.sln
-    
-#    - name: Build
-#      run: dotnet build ./Source/*.sln --configuration Release --no-restore
-    
-#    - name: Test
-#      run: dotnet test ./Source/*.sln --no-restore --verbosity normal
-    
-#    - name: Publish
-#      run: dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o './staging'
-    
-#    - name: Deploy to Website
-#      uses: azure/webapps-deploy@v2
-#      with:
-#        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-#        publish-profile: ${{ secrets.PUBLISH_PROFILE_STAGING }}
-#        package: './Source/Tailwind.Traders.Web/staging'
-    
+   
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.1.x
+   
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.x
+   
+    - name: Install dependencies
+      run: dotnet restore ./Source/*.sln
+   
+    - name: Build
+      run: dotnet build ./Source/*.sln --configuration Release --no-restore
+   
+    - name: Test
+      run: dotnet test ./Source/*.sln --no-restore --verbosity normal
+   
+    - name: Publish
+      run: dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o './staging'
+   
+    - name: Deploy to Website
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.PUBLISH_PROFILE_STAGING }}
+        package: './Source/Tailwind.Traders.Web/staging'
+   
     - name: Get current time
       run: echo "::set-env name=DEPLOYTIME::$(date)"
 
@@ -61,4 +61,4 @@ jobs:
         text: ${{ env.DEPLOYTIME }}
         theme_color: '222222'
         sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "Build completed [Run ${{ github.run_id }}](${{ env.baseRunUrl }}${{ github.run_id }})","activityText": "[${{ github.event.head_commit.message}}](${{ github.event.compare }})"}]'
-        actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "https://tailwindtraders-ado40-staging.azurewebsites.net/"}]},{"@type":"HttpPOST","name":"Distribute to App Center","target":"https://postb.in/1593997737592-6259517890866","headers":[{"name":"x-functions-key","value":"[functions-key-here]"}],"bodyContentType":"application/json","body":"{ \"sourceslot\": \"staging\", \"targetslot\": \"production\" }"}]'
+        actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "https://tailwindtraders-ado40-staging.azurewebsites.net/"}]},{"@type":"HttpPOST","name":"Distribute to App Center","target":"https://teams-appservice-slot-functions.azurewebsites.net/api/Teams_Appservice_Swapslot","headers":[{"name":"x-functions-key","value":"Lwj1BhqQe0VYe98pPzgLHr5aCmMnaHYZOfa27LgtlNvUIG8FpaPfzg=="}],"bodyContentType":"application/json","body":"{ \"sourceslot\": \"staging\", \"targetslot\": \"production\" }"}]'
