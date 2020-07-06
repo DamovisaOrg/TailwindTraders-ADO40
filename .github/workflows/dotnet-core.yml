@@ -61,4 +61,4 @@ jobs:
         text: ${{ env.DEPLOYTIME }}
         theme_color: '222222'
         sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "Build completed [Run ${{ github.run_id }}](${{ env.baseRunUrl }}${{ github.run_id }})","activityText": "[${{ github.event.head_commit.message}}](${{ github.event.compare }})"}]'
-        actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "https://tailwindtraders-ado40-staging.azurewebsites.net/"}]},{"@type": "OpenUri","name": "Promote to Production","targets": [{"os": "default","uri": "https://postb.in/1593993282622-5373476692475"}]}]'
+        actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "https://tailwindtraders-ado40-staging.azurewebsites.net/"}]},{"@type": "OpenUri","name": "Promote to Production","targets": [{"os": "default","uri": "https://postb.in/1593995740355-8499131090939"}]}]'
