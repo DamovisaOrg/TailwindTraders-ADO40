@@ -4,16 +4,12 @@ on:
   push:
     branches: [ master ]
 
-env:
-  AZURE_WEBAPP_NAME: TailwindTraders-ADO40
-
 jobs:
   build:
 
     runs-on: ubuntu-18.04
     env:
       CI: ""
-      baseRunUrl: "https://github.com/Damovisa/TailwindTraders-ADO40/actions/runs/"
 
     steps:
     - uses: actions/checkout@v2
@@ -36,27 +32,4 @@ jobs:
    
     - name: Test
       run: dotnet test ./Source/*.sln --no-restore --verbosity normal
-   
-    - name: Publish
-      run: dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o './staging'
-   
-    - name: Deploy to Website
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.PUBLISH_PROFILE_STAGING }}
-        package: './Source/Tailwind.Traders.Web/staging'
-   
-    - name: Get current time
-      run: echo "::set-env name=DEPLOYTIME::$(date)"
-
-    - name: Send a message to Microsoft Teams
-      uses: aliencube/microsoft-teams-actions@v0.8.0
-      with:
-        webhook_uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
-        title: "Deployment Completed"
-        summary: ''
-        text: ${{ env.DEPLOYTIME }}
-        theme_color: '222222'
-        sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "Build completed [Run ${{ github.run_id }}](${{ env.baseRunUrl }}${{ github.run_id }})","activityText": "[${{ github.event.head_commit.message}}](${{ github.event.compare }})"}]'
-        actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "https://tailwindtraders-ado40-staging.azurewebsites.net/"}]},{"@type":"HttpPOST","name":"Promote to Production","target":"https://teams-appservice-slot-functions.azurewebsites.net/api/Teams_Appservice_SwapSlot","headers":[{"name":"x-functions-key","value":"Lwj1BhqQe0VYe98pPzgLHr5aCmMnaHYZOfa27LgtlNvUIG8FpaPfzg=="}],"bodyContentType":"application/json","body":"{ \"slots\": { \"sourceslot\": \"staging\", \"targetslot\": \"production\" }, \"teamsui\": { \"initialDeploymentTime\":\"${{ env.DEPLOYTIME }}\", \"activityImage\":\"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\", \"activityTitle\":\"Build completed [Run ${{ github.run_id }}](${{ env.baseRunUrl }}${{ github.run_id }})\", \"activityText\":\"[${{ github.event.head_commit.message}}](${{ github.event.compare }})\", \"urlToLinkTo\":\"https://tailwindtraders-ado40.azurewebsites.net/\"}}"}]'
+      
