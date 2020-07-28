@@ -2,7 +2,7 @@ name: .NET Core
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ nothing ]
 
 env:
   AZURE_WEBAPP_NAME: TailwindTraders-ADO40-PR
