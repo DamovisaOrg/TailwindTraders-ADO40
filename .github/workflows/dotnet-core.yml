@@ -15,35 +15,35 @@ jobs:
     steps:
     - uses: actions/checkout@v2
    
-#    - name: Setup .NET Core
-#      uses: actions/setup-dotnet@v1
-#      with:
-#        dotnet-version: 2.1.x
-#   
-#    - name: Setup Node
-#      uses: actions/setup-node@v1
-#      with:
-#        node-version: 10.x
-#   
-#    - name: Install dependencies
-#      run: dotnet restore ./Source/*.sln
-#   
-#    - name: Build
-#      run: dotnet build ./Source/*.sln --configuration Release --no-restore
-#   
-#    - name: Test
-#      run: dotnet test ./Source/*.sln --no-restore --verbosity normal
-#      
-#    - name: Publish
-#      run: dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o './staging'
-#
-#    - name: Deploy to Website
-#      uses: azure/webapps-deploy@v2
-#      with:
-#        app-name: TailwindTraders-ADO40
-#        publish-profile: ${{ secrets.PUBLISH_PROFILE_STAGING }}
-#        package: "./Source/Tailwind.Traders.Web/staging"
-#    
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.1.x
+   
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.x
+   
+    - name: Install dependencies
+      run: dotnet restore ./Source/*.sln
+   
+    - name: Build
+      run: dotnet build ./Source/*.sln --configuration Release --no-restore
+   
+    - name: Test
+      run: dotnet test ./Source/*.sln --no-restore --verbosity normal
+      
+    - name: Publish
+      run: dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o './staging'
+
+    - name: Deploy to Website
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: TailwindTraders-ADO40
+        publish-profile: ${{ secrets.PUBLISH_PROFILE_STAGING }}
+        package: "./Source/Tailwind.Traders.Web/staging"
+    
     - name: Get current time
       run: |
         echo "::set-env name=DEPLOYTIME::$(date)"
