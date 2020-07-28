@@ -10,18 +10,46 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       CI: ""
+      baseRunUrl: "https://github.com/DamovisaOrg/TailwindTraders-ADO40/actions/runs/"
 
     steps:
     - uses: actions/checkout@v2
-  
-    - uses: Azure/docker-login@v1
+   
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
       with:
-        login-server: tailwindtradersado40.azurecr.io
-        username: tailwindtradersado40
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        dotnet-version: 2.1.x
+   
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.x
+   
+    - name: Install dependencies
+      run: dotnet restore ./Source/*.sln
+   
+    - name: Build
+      run: dotnet build ./Source/*.sln --configuration Release --no-restore
+   
+    - name: Test
+      run: dotnet test ./Source/*.sln --no-restore --verbosity normal
+      
+    - name: Publish
+      run: dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o './staging'
 
-    - run: |
-        cd Source/Tailwind.Traders.Web
-        docker build . -t tailwindtradersado40.azurecr.io/tailwindtraders-ado40:${{ github.sha }} -t tailwindtradersado40.azurecr.io/tailwindtraders-ado40:latest
-        docker push tailwindtradersado40.azurecr.io/tailwindtraders-ado40
-        cd ..
+    - name: Deploy to Website
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: TailwindTraders-ADO40
+        publish-profile: ${{ secrets.PUBLISH_PROFILE_STAGING }}
+        package: "./Source/Tailwind.Traders.Web/staging"
+
+    - name: Send a message to Microsoft Teams
+      uses: aliencube/microsoft-teams-actions@v0.8.0
+      with:
+        webhook_uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
+        title: "Deployment Completed"
+        summary: ''
+        theme_color: '222222'
+        sections: '[{"activityImage": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png","activityTitle": "CI/CD completed [Run ${{ github.run_id }}](${{ env.baseRunUrl }}${{ github.run_id }})","activityText": "[${{ github.event.head_commit.message}}](${{ github.event.compare }})", "facts": [{"name":"Deployed to Staging:","value":"${{env.DEPLOYTIME}}"}]}]'
+        actions: '[{"@type": "OpenUri","name": "Open Staging Site","targets": [{"os": "default","uri": "https://tailwindtraders-ado40-staging.azurewebsites.net/"}]},{"@type":"HttpPOST","name":"Promote to Production","target":"https://teams-appservice-slot-functions.azurewebsites.net/api/Teams_Appservice_SwapSlot","headers":[{"name":"x-functions-key","value":"${{ secrets.FUNCTIONS_KEY }}"}],"bodyContentType":"application/json","body":"{ \"slots\": { \"sourceslot\": \"staging\", \"targetslot\": \"production\" }, \"teamsui\": { \"initialDeploymentTime\":\"${{ env.DEPLOYTIME }}\", \"activityImage\":\"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\", \"activityTitle\":\"Build completed [Run ${{ github.run_id }}](${{ env.baseRunUrl }}${{ github.run_id }})\", \"activityText\":\"[${{ github.event.head_commit.message}}](${{ github.event.compare }})\", \"urlToLinkTo\":\"https://tailwindtraders-ado40.azurewebsites.net/\"}}"}]'
