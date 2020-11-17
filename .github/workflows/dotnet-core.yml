@@ -42,9 +42,22 @@ jobs:
         name: drop
         path: "./Source/Tailwind.Traders.Web/staging"
 
+  release:
+    needs: build
+    runs-on: ubuntu-18.04
+    env:
+      CI: ""
+
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: drop
+        path: "./staging"
+
     - name: Deploy to Website
       uses: azure/webapps-deploy@v2
       with:
         app-name: TailwindTraders-ADO40
         publish-profile: ${{ secrets.PUBLISH_PROFILE_PROD }}
-        package: "./Source/Tailwind.Traders.Web/staging"
+        package: "./staging"
