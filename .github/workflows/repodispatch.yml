@@ -1,0 +1,14 @@
+name: Repository Dispatch Example
+
+on:
+  repository_dispatch:
+    types: [damodispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - run: |
+        echo "Hello World!"
+        echo "${{ github.event.client_payload.message }}"
