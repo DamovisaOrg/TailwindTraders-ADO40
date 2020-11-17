@@ -12,6 +12,12 @@ jobs:
       CI: ""
 
     steps:
+    - uses: LIFX/buildlight-action@master
+      with:
+        lifx-token: ${{ secrets.LIFX_PAT }}
+        selector: "id:${{ secrets.LIFX_BULB_ID }}"
+        status: 'in_progress'
+
     - uses: actions/checkout@v2
    
     - name: Setup .NET Core
@@ -61,3 +67,10 @@ jobs:
         app-name: TailwindTraders-ADO40
         publish-profile: ${{ secrets.PUBLISH_PROFILE_PROD }}
         package: "./staging"
+
+    - uses: LIFX/buildlight-action@master
+      with:
+        lifx-token: ${{ secrets.LIFX_PAT }}
+        selector: "id:${{ secrets.LIFX_BULB_ID }}"
+        status: ${{ job.status }}
+      if: always()
