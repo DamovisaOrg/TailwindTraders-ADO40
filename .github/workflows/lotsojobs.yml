@@ -29,6 +29,15 @@ jobs:
         echo "Packaging artifacts for deployment..."
         sleep 6
 
+  exportdocs:
+    name: Export documentation
+    runs-on: ubuntu-latest
+    needs: docs
+    steps:
+    - run: |
+        echo "Exporting documentation to pdf..."
+        sleep 3
+
   staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
