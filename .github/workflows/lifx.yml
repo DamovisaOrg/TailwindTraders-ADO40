@@ -1,0 +1,36 @@
+name: LIFX Bulb
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  lights:
+    runs-on: ubuntu-latest
+    env:
+      LIFX_TOKEN: ${{ secrets.LIFX_PAT }}
+      LIFX_BULB_ID: ${{ secrets.LIFX_BULB_ID }}
+      
+    steps:
+    - run: |
+        echo "Comment left on an issue: ${{ github.event.comment.body }}"
+  
+    - run: |
+        comment="${{ github.event.comment.body }}"
+        light_colour=$(echo $comment | grep -Po '(\#[0-9a-fA-F]{6})' || true)
+        light_colour_len=${#light_colour}
+        if [ $light_colour_len = 7 ]; then echo "::set-output name=light_colour::$light_colour"; else echo "::set-output name=light_colour::#ffffff"; fi
+      id: set_light_colour
+
+    - uses: lannonbr/lifx-trigger-action@1.0.0
+      with:
+        color: ${{ steps.set_light_colour.outputs.light_colour }}
+        period: 15
+      if: ${{ github.event_name == 'issue_comment' }}
+
+    - uses: lannonbr/lifx-trigger-action@1.0.0
+      with:
+        color: '#ffffff'
+        period: 5
+      if: ${{ github.event_name == 'workflow_dispatch' }}
