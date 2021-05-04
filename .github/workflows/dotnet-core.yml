@@ -12,6 +12,12 @@ jobs:
       CI: ""
 
     steps:
+    - uses: LIFX/buildlight-action@master
+      with:
+        lifx-token: ${{ secrets.LIFX_PAT }}
+        selector: "id:${{ secrets.LIFX_BULB_ID }}"
+        status: 'in_progress'
+
     - uses: actions/checkout@v2
    
     - name: Setup .NET Core
@@ -32,4 +38,39 @@ jobs:
    
     - name: Test
       run: dotnet test ./Source/*.sln --no-restore --verbosity normal
-      
+    
+    - name: Publish
+      run: dotnet publish ./Source/Tailwind.Traders.Web/Tailwind.Traders.Web.csproj -c Release -o './staging'
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: drop
+        path: "./Source/Tailwind.Traders.Web/staging"
+
+  deploy:
+    runs-on: ubuntu-18.04
+    needs: build
+    environment: Production
+
+    steps:
+
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: drop
+        path: "./staging"
+
+    - name: Deploy to Website
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: TailwindTraders-ADO40
+        publish-profile: ${{ secrets.PUBLISH_PROFILE_PROD }}
+        package: "./staging"
+
+    - uses: LIFX/buildlight-action@master
+      with:
+        lifx-token: ${{ secrets.LIFX_PAT }}
+        selector: "id:${{ secrets.LIFX_BULB_ID }}"
+        status: ${{ job.status }}
+      if: always()
